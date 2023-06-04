@@ -25,6 +25,7 @@ class ProductController extends Controller
 
         $shop = DB::table('shops')->get();
 
+
         return view('product.create',['shops'=>$shop]);
     }
 
@@ -55,7 +56,7 @@ class ProductController extends Controller
             'image' => $imageName
         ]);
 
-        return back()->with('success','Brand has been Saved');
+        return back()->with('success','Product has been Saved');
     }
 
 
@@ -73,6 +74,9 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
+        $shop = DB::table('shops')->get();
+        $product = Product::findOrFail($id);
+        return view('product.edit',['products'=> $product,'shops'=>$shop]);
 
     }
 
@@ -81,7 +85,36 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'image'  => 'image|mimes:jpg,jpeg,png',
+        ]);
+
+
+        $product = Product::findOrFail($id);
+         // image upload
+         if ($request->has('image')) {
+            file_exists('image/'.$product->image) ? unlink('image/'.$product->image) : false;
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $imageName = uniqid(rand().time()).'.'.$extension;
+            $file->move('image/',$imageName);
+        }else{
+            $imageName = $product->image;
+        }
+
+
+        $product->update([
+            'name'        => $request->product_name,
+            'image'       => $imageName,
+            'price'       => $request->product_price,
+            'shop_id'      => $request->shops
+        ]);
+
+
+        return back()->with('success','Product has been Updated.');
+
+
+
     }
 
     /**
@@ -89,6 +122,12 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::find($id);
+        unlink('image/'.$product->image);
+        $product->delete();
+
+        return back()->with('success','Product has been Deleted.');
     }
+
+
 }

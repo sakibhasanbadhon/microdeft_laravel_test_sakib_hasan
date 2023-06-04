@@ -20,7 +20,8 @@
     </div>
 
     <div class="card-body">
-        <form action="{{ route('store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('update',$products->id) }}" method="POST" enctype="multipart/form-data">
+            @method('PUT')
             @csrf
             <div class="row">
                 <div class="col-sm-8">
@@ -29,11 +30,12 @@
 
                         <select name="shops" id="shops" class="form-control">
                             <option value="">shops Select</option>
-                            @forelse ($shops as $item)
-                                <option value="{{ $item->id }}"> {{ $item->name }} </option>
-                            @empty
 
-                            @endforelse
+                            @foreach ($shops as $item)
+
+                                <option value="{{ $item->id }}" {{ $products->shop_id == $item->id ? 'selected' : '' }}> {{ $item->name }}</option>
+
+                            @endforeach
 
                         </select>
 
@@ -44,7 +46,7 @@
 
                     <div class="mb-3 py-2">
                         <strong><label for="product_name" class="form-label">product Name</label></strong>
-                        <input type="text" name="product_name" class="form-control" id="product_name" placeholder="write product name">
+                        <input type="text" name="product_name" value="{{ $products->name }}" class="form-control" id="product_name">
                         @error('product_name')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -52,7 +54,7 @@
 
                     <div class="mb-3 py-2">
                         <strong><label for="product_price" class="form-label">price</label></strong>
-                        <input type="text" name="product_price" class="form-control" id="product_price" placeholder="write product price">
+                        <input type="text" name="product_price" value="{{ $products->price }}" class="form-control" id="product_price">
                         @error('product_price')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror

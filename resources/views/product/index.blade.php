@@ -19,22 +19,33 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <table class="table table-striped">
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>SL</th>
                                     <th>image</th>
                                     <th>name</th>
                                     <th>price</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($products as $item)
                                 <tr>
                                     <td>{{ $item->id }}</td>
-                                    <td><img src="" alt=""></td>
+                                    <td> <img width="80" height="80" src="{{ $item->image != null ? asset('image/'.$item->image)  : 'https://via.placeholder.com/80' }}"> </td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->price }}</td>
+                                    <td class="d-flex">
+                                        <a class="btn btn-primary" href="{{ route('edit',$item->id) }}">Edit</a>
+                                        <form action="{{ route('destroy',$item->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+
+
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </td>
                                 </tr>
 
                                 @empty
